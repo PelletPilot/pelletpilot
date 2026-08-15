@@ -1,0 +1,20 @@
+# PelletPilot self-host server (open-source, no auth — run on a trusted LAN).
+#   docker compose up -d --build
+# Then add your grill by IP via POST /api/devices.
+services:
+  pelletpilot:
+    build: .
+    # or use a prebuilt image once published:
+    # image: ghcr.io/pelletpilot/server:latest
+    container_name: pelletpilot
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data          # cook history + device registry persist here
+    environment:
+      - POLL_INTERVAL_MS=10000
+      # - HOST=0.0.0.0
+      # - PORT=8080
+    restart: unless-stopped
+    # The container must reach your grill's IP on the LAN (bridge networking is
+    # fine for outbound). For mDNS/.local discovery, use: network_mode: host

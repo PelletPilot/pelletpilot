@@ -1,0 +1,25 @@
+{
+  "name": "@pelletpilot/server",
+  "version": "0.1.0",
+  "description": "PelletPilot self-host server: device registry, capability templates, and cook history. No auth.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "echo \"no tests yet\""
+  },
+  "dependencies": {
+    "@fastify/websocket": "^11.0.0",
+    "@pelletpilot/protocol": "workspace:*",
+    "better-sqlite3": "^11.3.0",
+    "fastify": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

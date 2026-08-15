@@ -1,0 +1,11 @@
+private/
+.git/
+**/node_modules/
+**/dist/
+docs/
+reference/
+tools/
+*.md
+.env
+.env.*
+!**/package.json

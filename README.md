@@ -20,7 +20,7 @@ build smarter control on top — without the vendor app or vendor cloud.
 |-----------|---------|--------------|--------|
 | **Protocol core** | [`@pelletpilot/protocol`](packages/protocol) | TypeScript codec for the `FE…FF` serial frames + the RPC client. One source of truth, shared by everything. | 🟢 usable |
 | **Firmware** | [`pelletpilot/firmware`](https://github.com/pelletpilot/firmware) *(separate repo)* | Drop-in ESP32 app that points your grill at *your* cloud (v1: mJS; native ESP-IDF later). | 🟡 design |
-| **Server / cloud** | [`packages/server`](packages/server) | Self-hostable relay + REST/WebSocket **public API**. Devices connect in; apps connect out. | 🟡 design |
+| **Server** | [`packages/server`](packages/server) | Self-host server (Docker, **no auth**): device registry, capability templates, **cook history**. | 🟢 buildable |
 | **Mobile web app** | [`packages/app`](packages/app) | Mobile-first PWA SPA — live dashboard, control, probe graphs, cook timers. | 🟡 design |
 | **Python tools** | [`tools/`](tools) | Dependency-free CLI client + frame decoder (reference impl, validated app-accurate). | 🟢 usable |
 
@@ -78,7 +78,8 @@ TypeScript packages (installable) land as the monorepo fills in — see the road
 - [x] Reverse-engineer device, serial protocol, and cloud protocol ([`docs/`](docs))
 - [x] Validated Python reference client + decoder ([`tools/`](tools))
 - [ ] `@pelletpilot/protocol` — TS codec + client (in progress)
-- [ ] `packages/server` — self-hostable relay + public API (device WS ingress, REST, auth, SQLite)
+- [x] `packages/server` — self-host server (Docker, no auth): devices + capability templates + cook history (SQLite)
+- [ ] hosted public server — user accounts + cloud cook log (separate from the OSS build)
 - [ ] `packages/app` — mobile PWA SPA (dashboard, control, probe graphs)
 - [ ] `pelletpilot/firmware` *(separate repo)* — drop-in ESP32 app that repoints the grill to a PelletPilot server
 - [ ] Path-A "smart hold" supervisor (setpoint PID) — [`docs/07`](docs/07-pid-control-feasibility.md)

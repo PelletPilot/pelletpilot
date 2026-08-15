@@ -1,45 +1,71 @@
-# packages/server — PelletPilot cloud (self-hostable + public API)
+# @pelletpilot/server — self-host server
 
-> Status: 🟡 design. This README is the spec; implementation lands next.
+Open-source PelletPilot server. **No authentication** (LAN-trusted). Manages your
+grills/smokers and records **cook history**. Runs in Docker.
 
-The server is what lets your grill and your phone reach each other from anywhere, on
-infrastructure **you** own — or via the hosted PelletPilot public API for people who don't
-want to self-host. It implements the same device-facing protocol the grill firmware already
-speaks, so a lightly-modified firmware (or the stock one repointed) connects straight in.
+> The hosted public PelletPilot server (user accounts, cloud cook log) is separate.
+> This OSS build is local-first: it polls your devices on the LAN and stores everything
+> in a local SQLite file.
 
-## Responsibilities
+## Run (Docker)
 
-1. **Device ingress (WebSocket).** Accept the grill's outbound connection at
-   `wss://<host>/from/<deviceId>` and speak the documented envelope
-   ([`../../docs/04-cloud-api.md`](../../docs/04-cloud-api.md)):
-   - device → server: `{ id:-1, src, status:[sc11,sc12], data?, pState? }`
-   - server → device: `{ id, method:"PB.SendMCUCommand", params:{command} }` → device replies `{ id, src, result|error }`
-   Decode `status[]` with `@pelletpilot/protocol`.
-2. **Public API (REST + WebSocket).** For apps/integrations:
-   - `POST /auth/*` — user accounts (JWT).
-   - `GET /devices`, `GET /devices/:id/state`, `POST /devices/:id/command` (set temp, etc.).
-   - `GET /devices/:id/history` — cook/probe time series.
-   - `WS /subscribe/:id` — live decoded state push to the app.
-3. **Persistence.** Users, devices, bindings, cook history, alerts.
-4. **Alerts.** Probe-target reached, flameout/`noPellets`, high-temp, lid-open recovery.
+```bash
+docker compose up -d --build
+# server on http://<host>:8080 ; data persists in ./data
+```
 
-## Proposed stack (self-host friendly)
+Add your grill (by LAN IP). Capabilities come from a template + optional override;
+control board is auto-detected from firmware when reachable:
 
-- **Runtime:** Node 20+, TypeScript, **Fastify** + `ws`.
-- **DB:** SQLite (via Drizzle) by default → drop-in Postgres for scale. `DATABASE_URL` in `.env`.
-- **Auth:** JWT for users; per-device tokens for grills.
-- **Deploy:** single container; `docker compose up`. No cloud lock-in.
+```bash
+curl -X POST http://localhost:8080/api/devices \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Mac Daddy","host":"192.168.0.177","templateId":"vertical-smoker"}'
+```
 
-## Design principles
+The poller then samples it every 10s, auto-starting a **cook** when it powers on and
+ending it after it's been off a while.
 
-- **The cloud has no special powers.** It controls grills with the same `PB.*` methods a LAN
-  client uses — so local-only mode and cloud mode share one code path.
-- **Safety commands are idempotent and rate-limited.** Never queue-flood the auger setpoint.
-- **Bring-your-own-firmware.** Document exactly what a grill must connect to so anyone can
-  point a device here by changing one URL (`wsUrl`) — see `packages/firmware`.
+## Capability templates
 
-## Open questions (decide before coding)
+`GET /api/templates` → `pellet-grill`, `pellet-grill-chamber-only`,
+`pellet-grill-smoker-box`, `vertical-smoker`. Each prefills
+`{ meatProbes, smokerBox, lights, minTemp, maxTemp, tempStep }`; override any field when
+adding/patching a device. (Defined in `@pelletpilot/protocol` so the app shares them.)
 
-- Multi-tenant public API vs. single-tenant self-host — one codebase, feature-flagged?
-- Device auth for the public instance (the stock firmware has no client cert; add a
-  provisioning token via modified firmware, or accept deviceId + a shared secret?).
+## API
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/api/templates` | capability templates |
+| GET/POST | `/api/devices` | list / add device |
+| GET/PATCH/DELETE | `/api/devices/:id` | manage a device |
+| GET | `/api/devices/:id/state` | latest decoded live state |
+| POST | `/api/devices/:id/command` | `{setTemp}` or raw `{command}` |
+| GET | `/api/devices/:id/cooks` | cook history list |
+| POST | `/api/devices/:id/cook/start` | start a cook manually |
+| GET | `/api/cooks/:cookId` | cook + events |
+| GET | `/api/cooks/:cookId/samples` | time-series samples |
+| POST | `/api/cooks/:cookId/stop` | end a cook |
+| WS | `/api/devices/:id/live` | live state push (~3s) |
+
+## Data model (SQLite)
+
+- **devices** — id, name, host, model, control_board, capabilities(JSON)
+- **cooks** — a session per power-on (device_id, started_at, ended_at, title, notes)
+- **samples** — set/grill temp, probes[], fan/auger/igniter, fault flags, per interval
+- **events** — flameout / high-temp / fault edges within a cook
+
+## Dev (without Docker)
+
+```bash
+pnpm install
+pnpm --filter @pelletpilot/protocol build
+pnpm --filter @pelletpilot/server dev
+```
+
+## Security
+
+No auth by design — **only run on a trusted LAN**, never port-forward it. Home Assistant
+users can run it as a Docker/compose service alongside HA (a dedicated HA add-on is a
+possible future packaging).
