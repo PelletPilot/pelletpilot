@@ -34,6 +34,6 @@ test("decodeTemps rejects a status frame", () => {
 test("setTemperature encoding + 5° quantization", () => {
   assert.equal(setTemperature(225), "FE0501020205FF");
   assert.equal(setTemperature(250), "FE0501020500FF");
-  assert.equal(setTemperature(203), "FE0501020205FF"); // 203 -> 205
+  assert.equal(setTemperature(203), "FE0501020005FF"); // 203 -> 205
   assert.equal(CMD.TURN_OFF, "FE0102FF");
 });

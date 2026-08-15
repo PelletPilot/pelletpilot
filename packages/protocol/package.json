@@ -14,5 +14,6 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "keywords": ["pellet-grill", "pit-boss", "smoker", "bbq", "protocol", "mongoose-os"],
-  "publishConfig": { "access": "public" }
+  "publishConfig": { "access": "public" },
+  "devDependencies": { "typescript": "^5.6.0" }
 }
