@@ -1,0 +1,3310 @@
+{
+  "control_boards": {
+    "LBL": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-prove-1-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "LBL",
+      "platform_id": 1,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 41) {\r\n  return null;\r\n}\r\nconst status = {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 14),\r\n  moduleIsOn: parts[21] === 1,\r\n  err1: parts[22] === 1,\r\n  err2: parts[23] === 1,\r\n  err3: parts[24] === 1,\r\n  highTempErr: parts[25] === 1,\r\n  fanErr: parts[26] === 1,\r\n  hotErr: parts[27] === 1,\r\n  motorErr: parts[28] === 1,\r\n  noPellets: parts[29] === 1,\r\n  erL: parts[30] === 1,\r\n  fanState: parts[31] === 1,\r\n  hotState: parts[32] === 1,\r\n  motorState: parts[33] === 1,\r\n  lightState: parts[34] === 1,\r\n  primeState: parts[35] === 1,\r\n  isFahrenheit: parts[36] === 1,\r\n  recipeStep: parts[37],\r\n  recipeTime: parts[38] * 3600 + parts[39] * 60 + parts[40],\r\n};\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 24) {\r\n  return null;\r\n}\r\nreturn {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 17),\r\n  grillTemp: convertTemperature(parts, 20),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[23] === 1,\r\n};"
+    },
+    "LFS": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "LFS",
+      "platform_id": 1,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 41) {\r\n  return null;\r\n}\r\nconst status = {\r\n/*  p1Target: convertTemperature(parts, 2), */\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 14),\r\n  moduleIsOn: parts[21] === 1,\r\n  err1: parts[22] === 1,\r\n  err2: parts[23] === 1,\r\n  err3: parts[24] === 1,\r\n  highTempErr: parts[25] === 1,\r\n  fanErr: parts[26] === 1,\r\n  hotErr: parts[27] === 1,\r\n  motorErr: parts[28] === 1,\r\n  noPellets: parts[29] === 1,\r\n  erL: parts[30] === 1,\r\n  fanState: parts[31] === 1,\r\n  hotState: parts[32] === 1,\r\n  motorState: parts[33] === 1,\r\n  lightState: parts[34] === 1,\r\n  primeState: parts[35] === 1,\r\n  isFahrenheit: parts[36] === 1,\r\n  recipeStep: parts[37],\r\n  recipeTime: parts[38] * 3600 + parts[39] * 60 + parts[40],\r\n};\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Target = ftoc(status.p1Target);\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.p4Temp = ftoc(status.p4Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.smokerActTemp = ftoc(status.smokerActTemp);\r\n}\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 24) {\r\n  return null;\r\n}\r\nconst temps = {\r\n /* p1Target: convertTemperature(parts, 2), */\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 17),\r\n  grillTemp: convertTemperature(parts, 20),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[23] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.p4Temp = ftoc(temps.p4Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  temps.smokerActTemp = ftoc(temps.smokerActTemp);\r\n  temps.p1Target = ftoc(temps.p1Target);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBA": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBA",
+      "platform_id": 5,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 47) {\r\n  return null;\r\n}\r\n//const p1Target = convertTemperature(parts, 2);\r\n//const p2Target = convertTemperature(parts, 5);\r\n\r\nconst status = {\r\n//  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n//  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n//  p1Temp: convertTemperature(parts, 8),\r\n//  p2Temp: convertTemperature(parts, 11),\r\n//  p3Temp: convertTemperature(parts, 14),\r\n//  p4Temp: convertTemperature(parts, 17),\r\n//  smokerActTemp: convertTemperature(parts, 20),\r\n  moduleIsOn: parts[27] === 1,\r\n  err1: parts[28] === 1,\r\n  err2: parts[29] === 1,\r\n  err3: parts[30] === 1,\r\n  highTempErr: parts[31] === 1,\r\n  fanErr: parts[32] === 1,\r\n  hotErr: parts[33] === 1,\r\n  motorErr: parts[34] === 1,\r\n  noPellets: parts[35] === 1,\r\n  erL: parts[36] === 1,\r\n  fanState: parts[37] === 1,\r\n  hotState: parts[38] === 1,\r\n  motorState: parts[39] === 1,\r\n  lightState: parts[40] === 1,\r\n  primeState: parts[41] === 1,\r\n//  isFahrenheit: parts[42] === 1,\r\n  recipeStep: parts[43],\r\n  recipeTime: parts[44] * 3600 + parts[45] * 60 + parts[46],\r\n};\r\n/*switch (parts[26]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 23);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 23);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 30) {\r\n  return null;\r\n}\r\n\r\nconst p1Target = convertTemperature(parts, 2);\r\nconst p2Target = convertTemperature(parts, 5);\r\nconst status = {\r\n  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  grillSetTemp: convertTemperature(parts, 23),\r\n  grillTemp: convertTemperature(parts, 26),\r\n  smokerActTemp: convertTemperature(parts, 20),\r\n  isFahrenheit: parts[29] === 1,\r\n};\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}\r\n\r\nreturn status;"
+    },
+    "PBB": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBB",
+      "platform_id": 2,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 47) {\r\n  return null;\r\n}\r\n//const p1Target = convertTemperature(parts, 2);\r\n//const p2Target = convertTemperature(parts, 5);\r\n\r\nconst status = {\r\n  /*p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  smokerActTemp: convertTemperature(parts, 20),*/\r\n  moduleIsOn: parts[27] === 1,\r\n  err1: parts[28] === 1,\r\n  err2: parts[29] === 1,\r\n  err3: parts[30] === 1,\r\n  highTempErr: parts[31] === 1,\r\n  fanErr: parts[32] === 1,\r\n  hotErr: parts[33] === 1,\r\n  motorErr: parts[34] === 1,\r\n  noPellets: parts[35] === 1,\r\n  erL: parts[36] === 1,\r\n  fanState: parts[37] === 1,\r\n  hotState: parts[38] === 1,\r\n  motorState: parts[39] === 1,\r\n  lightState: parts[40] === 1,\r\n  primeState: parts[41] === 1,\r\n//  isFahrenheit: parts[42] === 1,\r\n  recipeStep: parts[43],\r\n  recipeTime: parts[44] * 3600 + parts[45] * 60 + parts[46],\r\n};\r\n/*\r\nswitch (parts[26]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 23);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 23);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 30) {\r\n  return null;\r\n}\r\n\r\nconst p1Target = convertTemperature(parts, 2);\r\nconst p2Target = convertTemperature(parts, 5);\r\nreturn {\r\n  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  grillSetTemp: convertTemperature(parts, 23),\r\n  grillTemp: convertTemperature(parts, 26),\r\n  smokerActTemp: convertTemperature(parts, 20),\r\n  isFahrenheit: parts[29] === 1,\r\n};"
+    },
+    "PBC": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBC",
+      "platform_id": 1,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n // isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nreturn {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};"
+    },
+    "PBC2": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBC2",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n // isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nreturn {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};"
+    },
+    "PBD": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBD",
+      "platform_id": 3,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 47) {\r\n  return null;\r\n}\r\n//const p1Target = convertTemperature(parts, 2);\r\n//const p2Target = convertTemperature(parts, 5);\r\n\r\nconst status = {\r\n  /*p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  smokerActTemp: convertTemperature(parts, 20),*/\r\n  moduleIsOn: parts[27] === 1,\r\n  err1: parts[28] === 1,\r\n  err2: parts[29] === 1,\r\n  err3: parts[30] === 1,\r\n  highTempErr: parts[31] === 1,\r\n  fanErr: parts[32] === 1,\r\n  hotErr: parts[33] === 1,\r\n  motorErr: parts[34] === 1,\r\n  noPellets: parts[35] === 1,\r\n  erL: parts[36] === 1,\r\n  fanState: parts[37] === 1,\r\n  hotState: parts[38] === 1,\r\n  motorState: parts[39] === 1,\r\n  lightState: parts[40] === 1,\r\n  primeState: parts[41] === 1,\r\n // isFahrenheit: parts[42] === 1,\r\n  recipeStep: parts[43],\r\n  recipeTime: parts[44] * 3600 + parts[45] * 60 + parts[46],\r\n};\r\n/*\r\nswitch (parts[26]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 23);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 23);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 30) {\r\n  return null;\r\n}\r\n\r\nconst p1Target = convertTemperature(parts, 2);\r\nconst p2Target = convertTemperature(parts, 5);\r\nreturn {\r\n  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  grillSetTemp: convertTemperature(parts, 23),\r\n  grillTemp: convertTemperature(parts, 26),\r\n  smokerActTemp: convertTemperature(parts, 20),\r\n  isFahrenheit: parts[29] === 1,\r\n};"
+    },
+    "PBE": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBE",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 47) {\r\n  return null;\r\n}\r\n//const p1Target = convertTemperature(parts, 2);\r\n//const p2Target = convertTemperature(parts, 5);\r\nconst status = {\r\n /* p1Target: p1Target !== 0 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 0 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  smokerActTemp: convertTemperature(parts, 20),*/\r\n  moduleIsOn: parts[27] === 1,\r\n  err1: parts[28] === 1,\r\n  err2: parts[29] === 1,\r\n  err3: parts[30] === 1,\r\n  highTempErr: parts[31] === 1,\r\n  fanErr: parts[32] === 1,\r\n  hotErr: parts[33] === 1,\r\n  motorErr: parts[34] === 1,\r\n  noPellets: parts[35] === 1,\r\n  erL: parts[36] === 1,\r\n  fanState: parts[37] === 1,\r\n  hotState: parts[38] === 1,\r\n  motorState: parts[39] === 1,\r\n  lightState: parts[40] === 1,\r\n  primeState: parts[41] === 1,\r\n // isFahrenheit: parts[42] === 1,\r\n  recipeStep: parts[43],\r\n  recipeTime: parts[44] * 3600 + parts[45] * 60 + parts[46],\r\n};\r\n/*\r\nswitch (parts[26]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 23);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 23);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}*/\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 30) {\r\n  return null;\r\n}\r\nconst p1Target = convertTemperature(parts, 2);\r\nconst p2Target = convertTemperature(parts, 5);\r\nconst  status = {\r\n  p1Target: p1Target !== 0 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 0 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  grillSetTemp: convertTemperature(parts, 23),\r\n  grillTemp: convertTemperature(parts, 26),\r\n  smokerActTemp: convertTemperature(parts, 20),\r\n  isFahrenheit: parts[29] === 1,\r\n};\r\n\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}\r\n\r\nreturn status;"
+    },
+    "PBG": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBG",
+      "platform_id": 5,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*switch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nreturn {\r\n  /*p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};"
+    },
+    "PBL": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0202FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBL",
+      "platform_id": 5,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n//  p1Target: convertTemperature(parts, 2),\r\n//  p1Temp: convertTemperature(parts, 5),\r\n//  p2Temp: convertTemperature(parts, 8),\r\n//  p3Temp: convertTemperature(parts, 11),\r\n//  p4Temp: convertTemperature(parts, 14),\r\n//  smokerActTemp: convertTemperature(parts, 17),\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*switch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nreturn {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};"
+    },
+    "PBL2": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0202FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBL2",
+      "platform_id": 7,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n/*  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*switch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nconst temps = {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};\r\n/*\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.p4Temp = ftoc(temps.p4Temp);\r\n  temps.p1Target = ftoc(temps.p1Target);\r\n  temps.smokerActTemp = ftoc(temps.smokerActTemp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n}\r\n*/\r\nreturn temps;"
+    },
+    "PBL3": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0202FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBL3",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n} */\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nconst temps = {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};\r\nconsole.log(\"Temp function\", temps, temps.isFahrenheit);\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.p4Temp = ftoc(temps.p4Temp);\r\n  temps.p1Target = ftoc(temps.p1Target);\r\n  temps.smokerActTemp = ftoc(temps.smokerActTemp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  console.log(\"Temp function - converted\", temps);\r\n\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBM": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBM",
+      "platform_id": 1,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  //not a grill status messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 36) {\r\n  return null;\r\n}\r\nconst status = {\r\n // p1Target: convertTemperature(parts, 2),\r\n // p1Temp: convertTemperature(parts, 5),\r\n // p2Temp: convertTemperature(parts, 8),\r\n // p3Temp: convertTemperature(parts, 11),\r\n  moduleIsOn: parts[18] === 1,\r\n  err1: parts[19] === 1,\r\n  err2: parts[20] === 1,\r\n  err3: parts[21] === 1,\r\n  highTempErr: parts[22] === 1,\r\n  fanErr: parts[23] === 1,\r\n  hotErr: parts[24] === 1,\r\n  motorErr: parts[25] === 1,\r\n  noPellets: parts[26] === 1,\r\n  fanState: parts[27] === 1,\r\n  hotState: parts[28] === 1,\r\n  motorState: parts[29] === 1,\r\n  lightState: parts[30] === 1,\r\n // isFahrenheit: parts[31] === 1,\r\n  recipeStep: parts[32],\r\n  recipeTime: parts[33] * 3600 + parts[34] * 60 + parts[35],\r\n};\r\n/*\r\nswitch (parts[17]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 14);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 14);\r\n    break;\r\n}\r\n\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n}\r\n*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 21) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n  //  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  grillSetTemp: convertTemperature(parts, 14),\r\n  grillTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[20] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBM2": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBM2",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  //not a grill status messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 36) {\r\n  return null;\r\n}\r\nconst status = {\r\n // p1Target: convertTemperature(parts, 2),\r\n // p1Temp: convertTemperature(parts, 5),\r\n // p2Temp: convertTemperature(parts, 8),\r\n // p3Temp: convertTemperature(parts, 11),\r\n  moduleIsOn: parts[18] === 1,\r\n  err1: parts[19] === 1,\r\n  err2: parts[20] === 1,\r\n  err3: parts[21] === 1,\r\n  highTempErr: parts[22] === 1,\r\n  fanErr: parts[23] === 1,\r\n  hotErr: parts[24] === 1,\r\n  motorErr: parts[25] === 1,\r\n  noPellets: parts[26] === 1,\r\n  fanState: parts[27] === 1,\r\n  hotState: parts[28] === 1,\r\n  motorState: parts[29] === 1,\r\n  lightState: parts[30] === 1,\r\n // isFahrenheit: parts[31] === 1,\r\n  recipeStep: parts[32],\r\n  recipeTime: parts[33] * 3600 + parts[34] * 60 + parts[35],\r\n};\r\n/*\r\nswitch (parts[17]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 14);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 14);\r\n    break;\r\n}\r\n\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n}*/\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 21) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n  //  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  grillSetTemp: convertTemperature(parts, 14),\r\n  grillTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[20] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBP": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let _hundreds = Math.floor(arguments[0]/100); let _tens = Math.floor((arguments[0] % 100) / 10); let _ones = Math.floor(arguments[0] % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0202FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBP",
+      "platform_id": 1,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n /* p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\nreturn {\r\n  p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};"
+    },
+    "PBT": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBT",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 47) {\r\n  return null;\r\n}\r\n//const p1Target = convertTemperature(parts, 2);\r\n//const p2Target = convertTemperature(parts, 5);\r\n\r\nconst status = {\r\n/*  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  smokerActTemp: convertTemperature(parts, 20), */\r\n  moduleIsOn: parts[27] === 1,\r\n  err1: parts[28] === 1,\r\n  err2: parts[29] === 1,\r\n  err3: parts[30] === 1,\r\n  highTempErr: parts[31] === 1,\r\n  fanErr: parts[32] === 1,\r\n  hotErr: parts[33] === 1,\r\n  motorErr: parts[34] === 1,\r\n  noPellets: parts[35] === 1,\r\n  erL: parts[36] === 1,\r\n  fanState: parts[37] === 1,\r\n  hotState: parts[38] === 1,\r\n  motorState: parts[39] === 1,\r\n  lightState: parts[40] === 1,\r\n  primeState: parts[41] === 1,\r\n // isFahrenheit: parts[42] === 1,\r\n  recipeStep: parts[43],\r\n  recipeTime: parts[44] * 3600 + parts[45] * 60 + parts[46],\r\n};\r\n/*switch (parts[26]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 23);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 23);\r\n    break;\r\n}\r\n\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}*/\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 30) {\r\n  return null;\r\n}\r\n\r\nconst p1Target = convertTemperature(parts, 2);\r\nconst p2Target = convertTemperature(parts, 5);\r\n\r\nconst temps = {\r\n  p1Target: p1Target !== 000 && p1Target !== 960 ? p1Target : null,\r\n  p2Target: p2Target !== 000 && p2Target !== 960 ? p2Target : null,\r\n  p1Temp: convertTemperature(parts, 8),\r\n  p2Temp: convertTemperature(parts, 11),\r\n  p3Temp: convertTemperature(parts, 14),\r\n  p4Temp: convertTemperature(parts, 17),\r\n  grillSetTemp: convertTemperature(parts, 23),\r\n  grillTemp: convertTemperature(parts, 26),\r\n  smokerActTemp: convertTemperature(parts, 20),\r\n  isFahrenheit: parts[29] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Target =  ftoc(temps.p1Target);\r\n  temps.p2Target =  ftoc(temps.p2Target);\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBV": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0800FF",
+          "slug": "turn-primer-motor-off"
+        },
+        {
+          "hexadecimal": "FE0801FF",
+          "slug": "turn-primer-motor-on"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBV",
+      "platform_id": 5,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  //not a grill status messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17),*/\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n//  isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*switch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Target = ftoc(status.p1Target);\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.p4Temp = ftoc(status.p4Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.smokerActTemp = ftoc(status.smokerActTemp);\r\n}*/\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.p4Temp = ftoc(temps.p4Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  temps.smokerActTemp = ftoc(temps.smokerActTemp);\r\n  temps.p1Target = ftoc(temps.p1Target);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBV2": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBV2",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  //not a grill status messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17), */\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n // isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Target = ftoc(status.p1Target);\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.p4Temp = ftoc(status.p4Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.smokerActTemp = ftoc(status.smokerActTemp);\r\n}\r\n*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 27) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 20),\r\n  grillTemp: convertTemperature(parts, 23),\r\n  smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[26] === 1,\r\n};\r\n\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.p4Temp = ftoc(temps.p4Temp);\r\n  temps.grillSetTemp = ftoc(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  temps.smokerActTemp = ftoc(temps.smokerActTemp);\r\n  temps.p1Target = ftoc(temps.p1Target);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBVA": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0B01FF",
+          "slug": "get-status"
+        },
+        {
+          "hexadecimal": "FE0C01FF",
+          "slug": "get-temperatures"
+        },
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[0];\r\nconst cval = [40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160];\r\nconst fval = [100, 115, 125, 135, 145, 150, 160, 170, 180, 190, 195, 205, 215, 225, 235, 240, 250, 260, 270, 280, 285, 290, 300, 310, 320];\r\n\r\nif (arguments[1] === false) {\r\n\tconst i = cval.indexOf(temp);\r\n  if (i < 0) {\r\n\t\ttemp = temp * 1.8 + 32;\r\n  } else {\r\n\t\ttemp = fval[i];\r\n  }\r\n}\r\n\r\nlet _hundreds = Math.floor(temp/100); \r\nlet _tens = Math.floor((temp % 100) / 10); \r\nlet _ones = Math.floor(temp % 10); \r\nreturn 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0200FF",
+          "slug": "turn-light-off"
+        },
+        {
+          "hexadecimal": "FE0201FF",
+          "slug": "turn-light-on"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBVA",
+      "platform_id": 8,
+      "status_function": "if (!message.startsWith(\"FE0B\")) {\r\n  //not a grill status messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nif (parts < 44) {\r\n  return null;\r\n}\r\nconst status = {\r\n  /*p1Target: convertTemperature(parts, 2),\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  smokerActTemp: convertTemperature(parts, 17), */\r\n  moduleIsOn: parts[24] === 1,\r\n  err1: parts[25] === 1,\r\n  err2: parts[26] === 1,\r\n  err3: parts[27] === 1,\r\n  highTempErr: parts[28] === 1,\r\n  fanErr: parts[29] === 1,\r\n  hotErr: parts[30] === 1,\r\n  motorErr: parts[31] === 1,\r\n  noPellets: parts[32] === 1,\r\n  erL: parts[33] === 1,\r\n  fanState: parts[34] === 1,\r\n  hotState: parts[35] === 1,\r\n  motorState: parts[36] === 1,\r\n  lightState: parts[37] === 1,\r\n  primeState: parts[38] === 1,\r\n // isFahrenheit: parts[39] === 1,\r\n  recipeStep: parts[40],\r\n  recipeTime: parts[41] * 3600 + parts[42] * 60 + parts[43],\r\n};\r\n/*\r\nswitch (parts[23]) {\r\n  case 1:\r\n    status.grillSetTemp = convertTemperature(parts, 20);\r\n    break;\r\n  case 2:\r\n    status.grillTemp = convertTemperature(parts, 20);\r\n    break;\r\n}\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if (typeof temp === \"undefined\" || temp === 960) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Target = ftoc(status.p1Target);\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.p4Temp = ftoc(status.p4Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.smokerActTemp = ftoc(status.smokerActTemp);\r\n}\r\n*/\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nconsole.log('parts', parts, parts.length);\r\nif (parts.length < 22) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 14),\r\n  grillTemp: convertTemperature(parts, 17),\r\n  //smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[20] === 1,\r\n};\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  \r\n  const ftocSet = function (temp) { \r\n\t\tconst cval = [40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160];\r\n  \tconst fval = [100, 115, 125, 135, 145, 150, 160, 170, 180, 190, 195, 205, 215, 225, 235, 240, 250, 260, 270, 280, 285, 290, 300, 310, 320];\r\n\t\tconst i = fval.indexOf(temp);\r\n  \tif (i < 0) {\r\n    \treturn ftoc(temp);\r\n  \t}\r\n  \treturn cval[i];\r\n  }\r\n  \r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.grillSetTemp = ftocSet(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  temps.p1Target =  ftoc(temps.p1Target);\r\n  temps.p2Target =  ftoc(temps.p2Target);\r\n}\r\n\r\nreturn temps;if (!message.startsWith(\"FE0C\")) {\r\n  //not a grill temperature messasge\r\n  return null;\r\n}\r\n\r\nconst parts = parseHexMessage(message);\r\nconsole.log('parts', parts, parts.length);\r\nif (parts.length < 22) {\r\n  return null;\r\n}\r\n\r\nconst temps = {\r\n /* p1Target: convertTemperature(parts, 2),*/\r\n  p1Temp: convertTemperature(parts, 5),\r\n  p2Temp: convertTemperature(parts, 8),\r\n  p3Temp: convertTemperature(parts, 11),\r\n  p4Temp: convertTemperature(parts, 14),\r\n  grillSetTemp: convertTemperature(parts, 14),\r\n  grillTemp: convertTemperature(parts, 17),\r\n  //smokerActTemp: convertTemperature(parts, 17),\r\n  isFahrenheit: parts[20] === 1,\r\n};\r\nif (!temps.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  \r\n  const ftocSet = function (temp) { \r\n\t\tconst cval = [40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160];\r\n  \tconst fval = [100, 115, 125, 135, 145, 150, 160, 170, 180, 190, 195, 205, 215, 225, 235, 240, 250, 260, 270, 280, 285, 290, 300, 310, 320];\r\n\t\tconst i = fval.indexOf(temp);\r\n  \tif (i < 0) {\r\n    \treturn ftoc(temp);\r\n  \t}\r\n  \treturn cval[i];\r\n  }\r\n  \r\n  temps.p1Temp = ftoc(temps.p1Temp);\r\n  temps.p2Temp = ftoc(temps.p2Temp);\r\n  temps.p3Temp = ftoc(temps.p3Temp);\r\n  temps.grillSetTemp = ftocSet(temps.grillSetTemp);\r\n  temps.grillTemp = ftoc(temps.grillTemp);\r\n  temps.p1Target =  ftoc(temps.p1Target);\r\n  temps.p2Target =  ftoc(temps.p2Target);\r\n}\r\n\r\nreturn temps;"
+    },
+    "PBX1": {
+      "control_board_commands": [
+        {
+          "hexadecimal": "FE0902FF",
+          "slug": "set-celsius"
+        },
+        {
+          "hexadecimal": "FE0901FF",
+          "slug": "set-fahrenheit"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0502'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-1-temperature"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0501'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-temperature"
+        },
+        {
+          "hexadecimal": "FE0102FF",
+          "slug": "turn-off"
+        },
+        {
+          "function": "let temp = arguments[1] === false ? Math.round(((arguments[0] * 1.8)+ 32)/5) * 5 : arguments[0]; let _hundreds = Math.floor(temp/100); let _tens = Math.floor((temp % 100) / 10); let _ones = Math.floor(temp % 10); return 'FE0503'+formatHex(_hundreds)+formatHex(_tens)+formatHex(_ones) + 'FF';",
+          "slug": "set-probe-2-temperature"
+        }
+      ],
+      "device_status_function": null,
+      "name": "PBX1",
+      "platform_id": 4,
+      "status_function": "if (!message.startsWith(\"FE1A\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 16) {\r\n  return null;\r\n}\r\n\r\nconst decodeTemp = (data, pos) => { \r\n  const encoded = data[pos] << 7 | (data[pos+1] & 0x7f);\r\n  if (encoded == 0) {\r\n   \treturn undefined;\r\n\t}\r\n\treturn encoded - 8192;\r\n}\r\n\r\nconst status = {\r\n grillTemp: decodeTemp(parts, 2),\r\ngrillSetTemp: decodeTemp(parts, 4),\r\n  p1Target: decodeTemp(parts, 8),\r\n  p2Target: decodeTemp(parts, 12),\r\n  p1Temp: decodeTemp(parts, 6),\r\n  p2Temp: decodeTemp(parts, 10),\r\n  moduleIsOn: (parts[15] & 0x10) !== 0, \r\n  err1: false,\r\n  err2: false,\r\n  err3: false,\r\n  highTempErr: (parts[14] & 0x40) !== 0,\r\n  fanErr: (parts[14] & 0x01) !== 0,\r\n  hotErr: (parts[14] & 0x04) !== 0,\r\n  motorErr: (parts[14] & 0x02) !== 0,\r\n  noPellets: (parts[14] & 0x20) !== 0,\r\n  erL: (parts[14] & 0x08) !== 0,\r\n  fanState: (parts[15] & 0x01) !== 0,\r\n  hotState: (parts[15] & 0x04) !== 0,\r\n  motorState: (parts[15] & 0x02) !== 0,\r\n  lightState: false,\r\n  primeState: false,\r\n  isFahrenheit: (parts[15] & 0x08) === 0,\r\n  recipeStep: 0,\r\n  recipeTime: 0,\r\n};\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}\r\n\r\nreturn status;",
+      "temperature_function": "if (!message.startsWith(\"FE1A\")) {\r\n  return null;\r\n}\r\nconst parts = parseHexMessage(message);\r\nif (parts.length < 16) {\r\n  return null;\r\n}\r\n\r\nconst decodeTemp = (data, pos) => { \r\n  const encoded = data[pos] << 7 | (data[pos+1] & 0x7f);\r\n  if (encoded == 0) {\r\n   \treturn undefined;\r\n\t}\r\n\treturn encoded - 8192;\r\n}\r\n\r\nconst status = {\r\n grillTemp: decodeTemp(parts, 2),\r\ngrillSetTemp: decodeTemp(parts, 4),\r\np1Target: decodeTemp(parts, 8),\r\n  p2Target: decodeTemp(parts, 12),\r\n  p1Temp: decodeTemp(parts, 6),\r\n  p2Temp: decodeTemp(parts, 10),\r\n  isFahrenheit: (parts[15] & 0x08) === 0,\r\n};\r\nif (!status.isFahrenheit) {\r\n  const ftoc = function (temp) {\r\n    if ((typeof temp === \"undefined\") || (temp === 960)) {\r\n      return temp;\r\n    }\r\n    return Math.floor((temp - 32) / 1.8);\r\n  };\r\n  status.p1Temp = ftoc(status.p1Temp);\r\n  status.p2Temp = ftoc(status.p2Temp);\r\n  status.p3Temp = ftoc(status.p3Temp);\r\n  status.grillSetTemp = ftoc(status.grillSetTemp);\r\n  status.grillTemp = ftoc(status.grillTemp);\r\n  status.p1Target =  ftoc(status.p1Target);\r\n  status.p2Target =  ftoc(status.p2Target);\r\n}\r\n\r\nreturn status;"
+    }
+  },
+  "grills": {
+    "LG0800BL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG0800BL.png",
+      "lights": 0,
+      "max_temp": "600",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "LG0800BL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG1000BL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG1000BL.png",
+      "lights": 0,
+      "max_temp": "600",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "LG1000BL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG1200BL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG1200BL.png",
+      "lights": 0,
+      "max_temp": "600",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "LG1200BL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG1200FL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LFS",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG1200FL.png",
+      "lights": 1,
+      "max_temp": "600",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "LG1200FL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG1200FP": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LFS",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG1200FP.png",
+      "lights": 0,
+      "max_temp": "600",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "LG1200FP",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG300BL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG300BL.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "LG300BL",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "LG800FL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LFS",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG800FL.png",
+      "lights": 1,
+      "max_temp": "600",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "LG800FL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LG800FP": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LFS",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LG800FP.png",
+      "lights": 0,
+      "max_temp": "600",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "LG800FP",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500/505/510/515/520/525/530/535/540/545/550/555/560/565/570/575/580/585/590/595/600"
+    },
+    "LGV4BL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "LBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LGV4BL.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "130",
+      "name": "LGV4BL",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "Lexington Wi-Fi Upgrade": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/ghost%20grill.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "Lexington Wi-Fi Upgrade",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB0500SP": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/500sp-109.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB0500SP",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB0820SP/SPW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820sp.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB0820SP/SPW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000D3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/ghost%20grill.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000D3",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000NC1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000NC1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000NC1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000NXW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000NXW",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1000PL": {
+      "category": "Wood Pellet",
+      "celsius_temp_increment": null,
+      "control_board": "PBG",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/LAREDO-1000-2020-3-18-103.png",
+      "lights": 1,
+      "max_temp": "High",
+      "meat_probes": 2,
+      "min_temp": "Smoke",
+      "name": "PB1000PL",
+      "temp_increment": "180/200/225/250/275/300/325/350/375/400/425/450/500"
+    },
+    "PB1000R1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000R1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000R1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000R2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000R2-2019-11-29-abby-112.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000R2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000S1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000S1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000S1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000SC1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000SC-2019-7-4-Abby-34.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000SC1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000SC2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb1000sc2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000SC2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000SP": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000sp.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000SP",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000T1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000T1-2019-7-4-abby-35.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000T1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000T2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000T2-2018-11-28-abby-36.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB1000T2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000T3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000T3-117.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000T3",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000T4": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000t4-115.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000T4",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000XL/PB1000SC3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1000SC3-Front-101619.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000XL/PB1000SC3",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1000XLW1 (Austin XL)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/austin-xl.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1000XLW1 (Austin XL)",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1020CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1020CS2.1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1020CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1020DX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL3",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "Https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1020DX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1020DX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1020NXW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1020NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1020NXW",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1100HTC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBE",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100HTC.M-Line%20Heritage.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PB1100HTC",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1100PS1": {
+      "category": "WiFi Upgrade /Legacy H1",
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/1100ps.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100PS1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1100PSC1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100PSC.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100PSC1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1100PSC2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100PSC-126.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100PSC2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1100PSC3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100PSC3.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100PSC3",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1100SP/SPW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100sp.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100SP/SPW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1100SPW2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1100SPW2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1100SPW2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1150 PS3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1150PS3.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1150 PS3",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1150DX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL3",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1150DX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1150DX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1150DX (PBL2)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1150DX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1150DX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1150G/GW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/Nav-1150.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1150G/GW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1150PS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1150PS2-2020-5-22-107.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "PB1150PS2",
+      "temp_increment": "180/190/200/210/220/230/240/250/260/270/280/290/300/325/350/375/400/450/500"
+    },
+    "PB1150PS3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1150PS3.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1150PS3",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1230": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pitboss-logo-transparent.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1230",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1230CS1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1230CS1-2021-9-17-tank-with-cover116.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1230CS1",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1230G/GW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1230G-2019-10-21-109.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1230G/GW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1230SP/SPW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1230sp-112.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1230SP/SPW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB1250 CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1250CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250 CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250 NX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1250NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250 NX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250 PL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1250PL.%20no%20shadow.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250 PL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250CS": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1250CS-2021-10-14-EN-124.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250CS",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1250CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250NX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1250NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250NX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1250PL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1250PL.%20no%20shadow.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1250PL",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1285KC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBG",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1285KC-103.png",
+      "lights": 2,
+      "max_temp": "High",
+      "meat_probes": 2,
+      "min_temp": "Smoke",
+      "name": "PB1285KC",
+      "temp_increment": "180/200/225/250/275/300/325/350/375/400/425/450/500"
+    },
+    "PB1285PC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBG",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1285PC.Rona.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1285PC",
+      "temp_increment": "180/200/225/250/275/300/325/350/375/400/425/450/500"
+    },
+    "PB1300 M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1300M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1300 M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1300 PS4": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1300PS4.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1300 PS4",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1300M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1300M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1300M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1300PS4": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1300PS4.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1300PS4",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1450CS": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1450CS-2021-10-14-124.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1450CS",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1500NXW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1500NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1500NXW",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1500NXW (PBM)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1500NX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1500NXW",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600 CS": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600CS-2021-10-14-EN-119.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600 CS",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600 CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1600CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600 CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600 M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600 M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600 PSE": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBD",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS.Elite2024.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PB1600 PSE",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600AMB": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1600AMB.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600AMB",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600CS": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600CS-2021-10-14-EN-119.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600CS",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1600CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600CST": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBE",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600CST.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PB1600CST",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PS1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS1-2020-5-22-single-105.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 4,
+      "min_temp": "180",
+      "name": "PB1600PS1",
+      "temp_increment": "180/190/200/210/220/230/240/250/260/270/280/290/300/325/350/375/400/450/500"
+    },
+    "PB1600PS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBP",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS2-2021-8-17-120.png",
+      "lights": 1,
+      "max_temp": "500",
+      "meat_probes": 4,
+      "min_temp": "150",
+      "name": "PB1600PS2",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PS2 (PBL)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS2-2021-8-17-120.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 4,
+      "min_temp": "150",
+      "name": "PB1600PS2",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PS3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS3.png",
+      "lights": 1,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600PS3",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PS3_": {
+      "category": "N/A",
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS3.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600PS3_",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PS4": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBT",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB1600PS4.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600PS4",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600PSE": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBB",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS.Elite2024.png",
+      "lights": 1,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PB1600PSE",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600SPW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600SPW.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600SPW",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB1600SPW2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600SPW2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB1600SPW2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB2180LK": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBG",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB2180LK-2020-3-16-105.png",
+      "lights": 2,
+      "max_temp": "High",
+      "meat_probes": 4,
+      "min_temp": "Smoke",
+      "name": "PB2180LK",
+      "temp_increment": "160/180/200/225/250/275/300/325/350/375/400/425/450/500"
+    },
+    "PB340": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB340.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB340",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB340TGW1 (Tailgator)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB340TGW1-2018-9-20-abby-22.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB340TGW1 (Tailgator)",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440D": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB440D3-2019-4-18-abby.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB440D",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440D2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB440D2-2019-1-7-abby-23.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB440D2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440D3/PB456D": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb456d.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB440D3/PB456D",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440TG1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB440TG1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB440TG1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440TGNC1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB440TGNC1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB440TGNC1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB440TGR1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB440TGR1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB440TGR1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB550G": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/550-nav-109.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB550G",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700D": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700D.Canada.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700D",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700FB": {
+      "category": "Wood Pellet",
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pitboss700FB.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700FB",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700FBM2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700FBM2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700FBM2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700FBW2 (Classic)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/Copper-classic-pb700-8.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB700FBW2 (Classic)",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700NC1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb700nc1-110.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB700NC1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700R1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700R1-2019-1-22-abby-21.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700R1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700R2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700R2-2019-7-1-Abby-111.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700R2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700S": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb700s.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700S",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700S1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700S1-26.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700S1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700S2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700S2-2019-1-22-abby-27.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700S2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700SC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700SC-2019-1-22-abby-125.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700SC",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB700T1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB700T1-114.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB700T1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820CS1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820CS1-2021-7-20-28.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820CS1",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB820D": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820D.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820D",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820D2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820D2-2019-1-7-abby-29.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820D2",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820D3": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB0820D3-2019-11-7-EN-AN-FR-116.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820D3",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820D4": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820D4.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820D4",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820FB": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb820fb.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820FB",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820FBC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820FBC.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820FBC",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820PS1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb820ps1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820PS1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820S": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/pb_820S.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820S",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820SC": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820SC.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820SC",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820T1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820T1.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 3,
+      "min_temp": "180",
+      "name": "PB820T1",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB820XL/PB820ME": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/820xl.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB820XL/PB820ME",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB850AMB": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB850AMB.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850AMB",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850CS1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB820CS1-2021-7-20-28.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850CS1",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850CS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB850CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850CS2 (PBM)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PB850CS2.2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850CS2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850DX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL3",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850DX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850DX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850DX (PBL2)": {
+      "category": "grill",
+      "celsius_temp_increment": null,
+      "control_board": "PBL2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850DX.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850DX",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850G/GW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/850-nav-109.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850G/GW",
+      "temp_increment": "180/200/225/250/300/350/400/450/475/500"
+    },
+    "PB850M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850M (PBM)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBM",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850M.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850M",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PB850PS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850PS2-2020-5-26-107.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850PS2",
+      "temp_increment": "180/190/200/210/220/230/240/250/260/270/280/290/300/325/350/375/400/450/500"
+    },
+    "PB850SPW2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB850SPW2.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PB850SPW2",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    },
+    "PBV3 M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV3M.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV3 M",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV30DS": {
+      "category": null,
+      "celsius_temp_increment": "40/45/50/55/60/65/70/75/80/85/90/95/100/105/110/115/120/125/130/135/140/145/150",
+      "control_board": "PBVA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV30DS_DTC.png",
+      "lights": 0,
+      "max_temp": "320",
+      "meat_probes": 2,
+      "min_temp": "100",
+      "name": "PBV30DS",
+      "temp_increment": "100/105/110/115/120/125/130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300"
+    },
+    "PBV30DX": {
+      "category": null,
+      "celsius_temp_increment": "40/45/50/55/60/65/70/75/80/85/90/95/100/105/110/115/120/125/130/135/140/145/150",
+      "control_board": "PBVA",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV30DS_DX.png",
+      "lights": 0,
+      "max_temp": "320",
+      "meat_probes": 2,
+      "min_temp": "100",
+      "name": "PBV30DX",
+      "temp_increment": "100/105/110/115/120/125/130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300"
+    },
+    "PBV3M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV3M.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV3M",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV3NX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV3NX.1.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV3NX",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV3NX (PBV)": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV3NX.1.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV3NX",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV4DX": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL3",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV4DX.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "130",
+      "name": "PBV4DX",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV4NXW": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV4NX.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV4NXW",
+      "temp_increment": "130/135/140/145/150/160/170/180/190/200/210/220/230/240/250/260/270/280/290/300/310/320/330/340/350/360/370/380/390/400/410/420"
+    },
+    "PBV4PS2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBL",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 1,
+      "has_recipe_functionality": 1,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV4PS2.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "130",
+      "name": "PBV4PS2",
+      "temp_increment": "130/140/150/160/170/180/190/200/210/220/230/240/250/260/270/280/290/300/310/320/330/340/350/360/370/380/390/400/410/420"
+    },
+    "PBV5 P2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/ghost%20vertical.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV5 P2",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV5CS": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV5CS1-2021-6-17-121.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PBV5CS",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV5P2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/V5%20Competition.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV5P2",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV5PL": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBG",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV5PL-2020-5-6-Brunswick-104.png",
+      "lights": 1,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PBV5PL",
+      "temp_increment": "150/160/170/180/190/200/210/220/230/240/250/260/270/280/290/300/310/320/330/340/350/360/370/380/390/400/410/420"
+    },
+    "PBV6 M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV6M.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV6 M",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV6 PSE": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBD",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/V6%20Elite.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "130",
+      "name": "PBV6 PSE",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV6M": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV6M.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV6M",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV6PSE": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBB",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/V6%20Elite.png",
+      "lights": 1,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "130",
+      "name": "PBV6PSE",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV7P2": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBV2",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "Https://dansons-mobile.s3.dualstack.us-east-1.amazonaws.com/grill-images/PBV7P2.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 3,
+      "min_temp": "130",
+      "name": "PBV7P2",
+      "temp_increment": "130/135/140/145/150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBV7PW1": {
+      "category": null,
+      "celsius_temp_increment": null,
+      "control_board": "PBC",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PBV7PW1_Sportsman-2021-6-30-controller123.png",
+      "lights": 0,
+      "max_temp": "420",
+      "meat_probes": 2,
+      "min_temp": "150",
+      "name": "PBV7PW1",
+      "temp_increment": "150/155/160/165/170/175/180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420"
+    },
+    "PBX - test 1": {
+      "category": "N/A",
+      "celsius_temp_increment": null,
+      "control_board": "PBX1",
+      "enabled": true,
+      "has_fc_functionality": 1,
+      "has_mpc": 0,
+      "has_recipe_functionality": 0,
+      "image_url": "https://dansons-mobile.s3.us-east-1.amazonaws.com/grill-images/PB1600PS3.png",
+      "lights": 0,
+      "max_temp": "500",
+      "meat_probes": 2,
+      "min_temp": "180",
+      "name": "PBX - test 1",
+      "temp_increment": "180/185/190/195/200/205/210/215/220/225/230/235/240/245/250/255/260/265/270/275/280/285/290/295/300/305/310/315/320/325/330/335/340/345/350/355/360/365/370/375/380/385/390/395/400/405/410/415/420/425/430/435/440/445/450/455/460/465/470/475/480/485/490/495/500"
+    }
+  }
+}

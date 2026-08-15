@@ -1,0 +1,35 @@
+# ─── Private / never publish ────────────────────────────────────────────────
+# Real device dump (contains WiFi passwords in cleartext, third-party factory
+# creds, device identifiers) AND Dansons' proprietary firmware files (copyright).
+private/
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.pem
+!**/ca-example.pem
+secrets.*
+*.key
+
+# Logs / captures
+*.log
+captures/
+
+# ─── Language / tooling ─────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.next/
+.vite/
+coverage/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+.idea/
+.vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
