@@ -8,6 +8,9 @@ import {
 } from "@pelletpilot/protocol";
 import type { Store } from "./db.js";
 import type { Poller } from "./poller.js";
+import { scanSubnet } from "./discover.js";
+
+const DEFAULT_CIDR = process.env.DISCOVER_CIDR ?? "192.168.0.0/24";
 
 interface AddDeviceBody {
   id?: string;
@@ -21,6 +24,14 @@ interface AddDeviceBody {
 export function registerRoutes(app: FastifyInstance, store: Store, poller: Poller) {
   app.get("/api/health", async () => ({ ok: true }));
   app.get("/api/templates", async () => TEMPLATES);
+
+  // scan the LAN for grills already on WiFi (no Bluetooth needed)
+  app.get<{ Querystring: { cidr?: string } }>("/api/discover", async (req) => {
+    const cidr = req.query.cidr || DEFAULT_CIDR;
+    const known = new Set(store.listDevices().map((d) => d.id));
+    const found = await scanSubnet(cidr);
+    return found.map((f) => ({ ...f, alreadyAdded: known.has(f.id) }));
+  });
 
   // --- devices ---
   app.get("/api/devices", async () =>

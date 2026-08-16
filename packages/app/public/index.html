@@ -82,31 +82,87 @@ function fmtDate(ms){const d=new Date(ms);return d.toLocaleString([], {month:'sh
 
 async function boot(){
   try{ devices = await j('/api/devices'); }catch{ devices=[]; }
-  if(!devices.length){ return onboard(); }
+  if(!devices.length){ return wizard(); }
   cur = devices.find(d=>d.id===cur?.id) || devices[0];
   document.getElementById('tabs').style.display='';
   renderHeader(); startLive(); render();
 }
 
-// ---------- onboarding ----------
-async function onboard(){
+// ---------- add-device wizard ----------
+async function wizard(){
+  if(ws){try{ws.close();}catch{}}
   document.getElementById('tabs').style.display='none';
-  document.getElementById('hdr').innerHTML='';
+  document.getElementById('hdr').innerHTML = devices.length?'<span id="wcancel" class="muted" style="cursor:pointer">Cancel</span>':'';
+  const wc=document.getElementById('wcancel'); if(wc) wc.onclick=()=>boot();
   try{ templates = await j('/api/templates'); }catch{ templates=[]; }
+  stepStart();
+}
+function tplOpts(sel){ return templates.map(t=>`<option value="${t.id}" ${t.id===sel?'selected':''}>${t.label}</option>`).join(''); }
+
+function stepStart(){
   const v=document.getElementById('view'); v.innerHTML='';
-  const opts = templates.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
-  const card = $(`<div class="card">
-    <div class="center" style="font-size:34px">🔥</div>
-    <h2 class="center" style="margin:4px 0 2px">Add your grill</h2>
-    <p class="center muted" style="margin-top:0">Enter its IP on your network. Capabilities come from the model template.</p>
-    <label>Name</label><input id="f-name" placeholder="Mac Daddy"/>
-    <label>Grill IP / host</label><input id="f-host" placeholder="192.168.0.177"/>
-    <label>Type</label><select id="f-tpl">${opts}</select>
+  v.appendChild($(`<div class="card">
+    <div class="center" style="font-size:36px">🔥</div>
+    <h2 class="center" style="margin:4px 0 2px">Add a grill</h2>
+    <p class="center muted">Make sure your grill is powered on and connected to the same WiFi.</p>
+    <div style="height:8px"></div>
+    <button class="btn" id="w-search">Search my network</button>
+    <div style="height:10px"></div>
+    <button class="btn ghost" id="w-manual">Enter IP manually</button>
+    <p class="muted center" style="font-size:12px;margin-top:16px">Grill not on WiFi yet? Bluetooth setup is coming soon.</p>
+  </div>`));
+  v.querySelector('#w-search').onclick=stepSearching;
+  v.querySelector('#w-manual').onclick=()=>stepConfirm(null);
+}
+
+async function stepSearching(){
+  const v=document.getElementById('view');
+  v.innerHTML='';
+  v.appendChild($(`<div class="card center"><div style="font-size:34px" class="spin">📡</div>
+    <h3 style="margin:8px 0 2px">Searching…</h3>
+    <p class="muted">Scanning your network for grills. This takes a few seconds.</p></div>`));
+  let found=[]; try{ found=await j('/api/discover'); }catch{}
+  stepResults(found);
+}
+
+function stepResults(found){
+  const v=document.getElementById('view'); v.innerHTML='';
+  const card=$(`<div class="card"><h3 style="margin:2px 0 8px">${found.length?'Found grills':'No grills found'}</h3></div>`);
+  if(!found.length){
+    card.appendChild($(`<p class="muted">Make sure the grill is on and on this WiFi, then try again.</p>`));
+  }
+  found.forEach(f=>{
+    const added=f.alreadyAdded;
+    const row=$(`<div class="cook" style="${added?'opacity:.5':''}">
+      <div><div class="t">${f.id}</div><div class="m">${f.host} · ${f.controlBoard||''} · fw ${f.fwVersion||'?'}</div></div>
+      <div class="m">${added?'added':'add ›'}</div></div>`);
+    if(!added) row.onclick=()=>stepConfirm(f);
+    card.appendChild(row);
+  });
+  v.appendChild(card);
+  const btns=$(`<div class="row"><button class="btn ghost" id="w-retry">Search again</button><button class="btn ghost" id="w-manual2">Manual</button></div>`);
+  btns.querySelector('#w-retry').onclick=stepSearching;
+  btns.querySelector('#w-manual2').onclick=()=>stepConfirm(null);
+  v.appendChild(btns);
+}
+
+function stepConfirm(found){
+  const v=document.getElementById('view'); v.innerHTML='';
+  const name = found ? found.id.split('-').slice(0,1).join('-')+' Grill' : '';
+  const host = found ? found.host : '';
+  const tpl  = found ? found.templateId : (templates[0]&&templates[0].id);
+  const card=$(`<div class="card">
+    <h3 class="center" style="margin:2px 0 6px">${found?'Confirm grill':'Add grill by IP'}</h3>
+    <label>Name</label><input id="f-name" value="${name}" placeholder="Mac Daddy"/>
+    <label>Grill IP / host</label><input id="f-host" value="${host}" placeholder="192.168.0.177" ${found?'readonly':''}/>
+    <label>Type</label><select id="f-tpl">${tplOpts(tpl)}</select>
     <div style="height:14px"></div>
     <button class="btn" id="f-add">Add device</button>
-    <p class="muted center" id="f-err" style="min-height:18px;color:var(--danger)"></p>
+    <button class="btn ghost" id="f-back" style="margin-top:10px">Back</button>
+    <p class="center" id="f-err" style="min-height:18px;color:var(--danger)"></p>
   </div>`);
   v.appendChild(card);
+  card.querySelector('#f-back').onclick=()=>found?stepSearching():stepStart();
   card.querySelector('#f-add').onclick=async()=>{
     const name=card.querySelector('#f-name').value.trim();
     const host=card.querySelector('#f-host').value.trim();
@@ -120,10 +176,12 @@ async function onboard(){
 
 function renderHeader(){
   const h=document.getElementById('hdr');
+  const add=`<span id="w-add" title="Add grill" style="cursor:pointer;font-size:22px;line-height:1;padding:0 4px">＋</span>`;
   if(devices.length>1){
-    h.innerHTML=`<select id="devsel" style="width:auto">${devices.map(d=>`<option value="${d.id}" ${d.id===cur.id?'selected':''}>${d.name}</option>`).join('')}</select>`;
+    h.innerHTML=`<span style="display:flex;gap:8px;align-items:center"><select id="devsel" style="width:auto">${devices.map(d=>`<option value="${d.id}" ${d.id===cur.id?'selected':''}>${d.name}</option>`).join('')}</select>${add}</span>`;
     h.querySelector('#devsel').onchange=(e)=>{cur=devices.find(d=>d.id===e.target.value);startLive();render();};
-  } else h.innerHTML=`<span class="muted">${cur.name}</span>`;
+  } else h.innerHTML=`<span style="display:flex;gap:10px;align-items:center"><span class="muted">${cur.name}</span>${add}</span>`;
+  const a=h.querySelector('#w-add'); if(a) a.onclick=()=>wizard();
 }
 
 // ---------- live ----------
