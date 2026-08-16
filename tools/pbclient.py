@@ -75,8 +75,7 @@ class PitBoss:
     def turn_off(self):
         return self.send_mcu("FE0102FF")
 
-    def turn_on(self):
-        return self.send_mcu("FE0101FF")
+    # No turn_on: protocol has no remote power-on; grill must be started physically.
 
     def light_on(self):
         return self.send_mcu("FE0201FF")

@@ -16,7 +16,9 @@ export const CMD = {
   GET_TEMPERATURES: "FE0C01FF",
   SET_FAHRENHEIT: "FE0901FF",
   SET_CELSIUS: "FE0902FF",
-  TURN_ON: "FE0101FF",
+  // NOTE: there is NO remote power-ON command. All control boards expose only
+  // turn-off; igniting must be done physically at the grill (safety). Do not
+  // invent a turn-on frame.
   TURN_OFF: "FE0102FF",
   LIGHT_ON: "FE0201FF",
   LIGHT_OFF: "FE0200FF",

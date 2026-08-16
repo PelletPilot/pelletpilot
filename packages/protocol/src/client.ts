@@ -71,9 +71,7 @@ export class PelletGrill {
   setTemperature(tempF: number) {
     return this.sendMCU(setTemperature(tempF));
   }
-  turnOn() {
-    return this.sendMCU(CMD.TURN_ON);
-  }
+  // No turnOn(): the protocol has no remote power-on (must be started physically).
   turnOff() {
     return this.sendMCU(CMD.TURN_OFF);
   }

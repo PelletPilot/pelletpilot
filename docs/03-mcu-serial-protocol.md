@@ -28,8 +28,7 @@ FE  <type>  <payload …>  FF
 | set-temperature | `FE 05 01 <H> <T> <O> FF` | Set grill target. Digits hundreds/tens/ones, one per byte. Rounded to nearest 5°F. e.g. **225°F → `FE0501020205FF`**, 250 → `FE0501020500FF`. |
 | set-fahrenheit | `FE 09 01 FF` | Units = °F. |
 | set-celsius | `FE 09 02 FF` | Units = °C. |
-| turn-off | `FE 01 02 FF` | Power off the grill. |
-| turn-on | `FE 01 01 FF` | Power on (implied pair of turn-off). |
+| turn-off | `FE 01 02 FF` | Power off the grill. **No remote power-ON command exists** — igniting must be done physically at the grill (all boards expose only turn-off). |
 | turn-light-on | `FE 02 01 FF` | Cabinet light on. |
 | turn-light-off | `FE 02 00 FF` | Cabinet light off. |
 | turn-primer-motor-on | `FE 08 01 FF` | **Primer** motor (initial pellet prime) on. |
