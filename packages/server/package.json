@@ -12,6 +12,7 @@
     "test": "echo \"no tests yet\""
   },
   "dependencies": {
+    "@fastify/static": "^8.0.0",
     "@fastify/websocket": "^11.0.0",
     "@pelletpilot/protocol": "workspace:*",
     "better-sqlite3": "^11.3.0",

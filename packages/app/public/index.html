@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PelletPilot</title>
+<meta name="theme-color" content="#0e0b0a" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{--bg:#0e0b0a;--panel:#171210;--card:#1d1613;--line:#2c221d;--fg:#f4ece6;--muted:#b09a8c;
+    --brand:#ff6a2b;--brand2:#ffb02e;--probe:#4aa3ff;--ok:#6fce7d;--off:#5b4d44;--danger:#ff5d5d;--set:#8d8078;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;}
+  header .b{font-weight:800;font-size:18px;} header .b span{color:var(--brand);}
+  select,input,button{font:inherit;color:var(--fg);}
+  select,input{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;}
+  .main{flex:1;padding:6px 16px 90px;}
+  .muted{color:var(--muted);} .center{text-align:center;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;}
+  .btn{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#1a0f08;border:0;border-radius:12px;padding:13px;font-weight:700;width:100%;cursor:pointer;}
+  .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--fg);}
+  .row{display:flex;gap:10px;} .row>*{flex:1;}
+  label{font-size:12px;color:var(--muted);display:block;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.8px;}
+  /* live */
+  .hero{text-align:center;padding:10px 0 2px;}
+  .hero .big{font-size:74px;font-weight:800;letter-spacing:-4px;line-height:.95;}
+  .hero .big span{font-size:24px;color:var(--muted);}
+  .hero .st{color:var(--probe);font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-top:2px;}
+  .prog{height:7px;border-radius:5px;background:var(--panel);margin:10px 40px 0;overflow:hidden;}
+  .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .5s;}
+  .setrow{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0 4px;}
+  .step{width:54px;height:54px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--fg);font-size:28px;font-weight:700;display:grid;place-items:center;cursor:pointer;user-select:none;}
+  .setval{min-width:120px;text-align:center;} .setval .n{font-size:30px;font-weight:800;} .setval .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1.4px;}
+  .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
+  .act{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 6px;text-align:center;}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--off);margin:0 auto 6px;}
+  .act.on .st{color:var(--brand);} .act.fan.on .dot{background:var(--probe);} .act.ign.on .dot{background:var(--danger);} .act.aug.on .dot{background:var(--brand2);}
+  .act .lbl{font-size:11px;color:var(--muted);} .act .st{font-size:11px;font-weight:700;color:var(--off);}
+  .probes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;display:flex;gap:10px;align-items:center;}
+  .pr .id{font-size:11px;font-weight:800;} .pr .cur{font-size:19px;font-weight:800;} .pr .cur span{font-size:11px;color:var(--muted);}
+  .pr.off{opacity:.5;} .pr.off .cur{font-size:14px;color:var(--muted);}
+  .badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;border:1px solid var(--line);}
+  .badge.on{color:var(--ok);border-color:#2c4a30;} .badge.offl{color:var(--danger);}
+  .alert{display:flex;gap:9px;align-items:center;background:#3a1414;border:1px solid #5c2020;color:#ffd9d9;border-radius:11px;padding:10px 12px;margin-bottom:10px;font-size:13px;font-weight:600;}
+  /* history */
+  .cook{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .cook .t{font-weight:700;} .cook .m{font-size:12px;color:var(--muted);}
+  /* tabs */
+  .tabs{position:fixed;bottom:0;left:0;right:0;background:#0a0807;border-top:1px solid var(--line);display:flex;}
+  .tabs .wrapt{max-width:480px;margin:0 auto;display:flex;width:100%;}
+  .tab{flex:1;text-align:center;padding:12px 0 16px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;}
+  .tab.on{color:var(--brand);}
+  svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="b">🔥 Pellet<span>Pilot</span></div>
+    <div id="hdr"></div>
+  </header>
+  <div class="main" id="view"></div>
+  <div class="tabs" id="tabs" style="display:none"><div class="wrapt">
+    <div class="tab on" data-t="live">Live</div>
+    <div class="tab" data-t="history">History</div>
+  </div></div>
+</div>
+
+<script>
+const API = ""; // same origin
+const $=(h)=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;};
+const round=(n)=>n==null?null:Math.round(n);
+const j=(u,o)=>fetch(API+u,o).then(r=>r.ok?r.json():r.json().then(e=>Promise.reject(e)));
+const DISC=960;
+let devices=[], cur=null, tab='live', ws=null, templates=[];
+
+function fmtDur(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h}h ${m}m`:`${m}m`;}
+function fmtDate(ms){const d=new Date(ms);return d.toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}
+
+async function boot(){
+  try{ devices = await j('/api/devices'); }catch{ devices=[]; }
+  if(!devices.length){ return onboard(); }
+  cur = devices.find(d=>d.id===cur?.id) || devices[0];
+  document.getElementById('tabs').style.display='';
+  renderHeader(); startLive(); render();
+}
+
+// ---------- onboarding ----------
+async function onboard(){
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('hdr').innerHTML='';
+  try{ templates = await j('/api/templates'); }catch{ templates=[]; }
+  const v=document.getElementById('view'); v.innerHTML='';
+  const opts = templates.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
+  const card = $(`<div class="card">
+    <div class="center" style="font-size:34px">🔥</div>
+    <h2 class="center" style="margin:4px 0 2px">Add your grill</h2>
+    <p class="center muted" style="margin-top:0">Enter its IP on your network. Capabilities come from the model template.</p>
+    <label>Name</label><input id="f-name" placeholder="Mac Daddy"/>
+    <label>Grill IP / host</label><input id="f-host" placeholder="192.168.0.177"/>
+    <label>Type</label><select id="f-tpl">${opts}</select>
+    <div style="height:14px"></div>
+    <button class="btn" id="f-add">Add device</button>
+    <p class="muted center" id="f-err" style="min-height:18px;color:var(--danger)"></p>
+  </div>`);
+  v.appendChild(card);
+  card.querySelector('#f-add').onclick=async()=>{
+    const name=card.querySelector('#f-name').value.trim();
+    const host=card.querySelector('#f-host').value.trim();
+    const templateId=card.querySelector('#f-tpl').value;
+    if(!name||!host){card.querySelector('#f-err').textContent='name and IP required';return;}
+    card.querySelector('#f-err').textContent='adding…';
+    try{ await j('/api/devices',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,host,templateId})}); boot(); }
+    catch(e){ card.querySelector('#f-err').textContent=e.error||'failed'; }
+  };
+}
+
+function renderHeader(){
+  const h=document.getElementById('hdr');
+  if(devices.length>1){
+    h.innerHTML=`<select id="devsel" style="width:auto">${devices.map(d=>`<option value="${d.id}" ${d.id===cur.id?'selected':''}>${d.name}</option>`).join('')}</select>`;
+    h.querySelector('#devsel').onchange=(e)=>{cur=devices.find(d=>d.id===e.target.value);startLive();render();};
+  } else h.innerHTML=`<span class="muted">${cur.name}</span>`;
+}
+
+// ---------- live ----------
+function startLive(){
+  if(ws){try{ws.close();}catch{}}
+  const proto=location.protocol==='https:'?'wss':'ws';
+  ws=new WebSocket(`${proto}://${location.host}/api/devices/${cur.id}/live`);
+  ws.onmessage=(m)=>{ cur.live=JSON.parse(m.data); if(tab==='live') render(); };
+  ws.onclose=()=>{};
+}
+
+function render(){ tab==='live'?renderLive():renderHistory(); }
+
+function renderLive(){
+  const v=document.getElementById('view');
+  const live=cur.live||{}; const s=live.state||{}; const caps=cur.capabilities;
+  const on=s.moduleIsOn===true, online=live.online!==false;
+  const set=round(s.grillSetTemp), grill=on?round(s.grillTemp):null;
+  const alerts=[];
+  if(s.noPellets) alerts.push('💨 Flameout / low pellets');
+  if(s.highTempErr) alerts.push('🔥 High temperature');
+  if(s.fanErr) alerts.push('Fan fault'); if(s.motorErr) alerts.push('Auger fault');
+
+  let probes='';
+  for(let i=0;i<caps.meatProbes;i++){
+    const raw=s['p'+(i+1)+'Temp']; const conn=raw!=null&&raw!==DISC;
+    probes+=`<div class="pr ${conn?'':'off'}"><div class="id" style="color:var(--probe)">P${i+1}</div>
+      <div>${conn?`<div class="cur">${round(raw)}<span>°</span></div>`:`<div class="cur">— — —</div>`}</div></div>`;
+  }
+
+  v.innerHTML='';
+  v.appendChild($(`<div>
+    ${alerts.map(a=>`<div class="alert">⚠️ ${a}</div>`).join('')}
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>${cur.name}</b> <span class="muted">· ${cur.model||caps.meatProbes+' probe'}</span></div>
+      <div>${online?(live.cookId?'<span class="badge on">● COOKING</span>':(on?'<span class="badge on">ON</span>':'<span class="badge">OFF</span>')):'<span class="badge offl">OFFLINE</span>'}</div>
+    </div>
+    <div class="hero">
+      <div class="big">${grill!=null?grill:'--'}<span>°F</span></div>
+      <div class="st">${on?(grill<set-2?'heating to '+set+'°':'holding '+set+'°'):'off'}</div>
+      <div class="prog"><i style="width:${on&&set?Math.max(4,Math.min(100,grill/set*100)):0}%"></i></div>
+    </div>
+    <div class="setrow">
+      <div class="step" id="dn">−</div>
+      <div class="setval"><div class="n">${set!=null?set+'°':'--'}</div><div class="l">Set Temp</div></div>
+      <div class="step" id="up">+</div>
+    </div>
+    <div class="acts">
+      <div class="act fan ${on&&s.fanState?'on':''}"><div class="dot"></div><div class="lbl">Fan</div><div class="st">${on&&s.fanState?'ON':'OFF'}</div></div>
+      <div class="act ign ${on&&s.hotState?'on':''}"><div class="dot"></div><div class="lbl">Igniter</div><div class="st">${on&&s.hotState?'HOT':'OFF'}</div></div>
+      <div class="act aug ${on&&s.motorState?'on':''}"><div class="dot"></div><div class="lbl">Auger</div><div class="st">${on&&s.motorState?'FEED':'OFF'}</div></div>
+    </div>
+    ${caps.meatProbes?`<div class="probes">${probes}</div>`:'<p class="muted center">Chamber sensor only.</p>'}
+  </div>`));
+
+  const cmd=(setTemp)=>j(`/api/devices/${cur.id}/command`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setTemp})}).catch(()=>{});
+  v.querySelector('#up').onclick=()=>{const n=Math.min(caps.maxTemp,(set||caps.minTemp)+caps.tempStep);cmd(n);};
+  v.querySelector('#dn').onclick=()=>{const n=Math.max(caps.minTemp,(set||caps.minTemp)-caps.tempStep);cmd(n);};
+}
+
+// ---------- history ----------
+async function renderHistory(){
+  const v=document.getElementById('view'); v.innerHTML='<p class="muted center">loading…</p>';
+  let cooks=[]; try{ cooks=await j(`/api/devices/${cur.id}/cooks`); }catch{}
+  if(!cooks.length){ v.innerHTML='<div class="card center muted">No cooks yet. History records automatically when the grill is on.</div>'; return; }
+  v.innerHTML='';
+  const list=$(`<div class="card"><h3 style="margin:2px 0 6px">Cook history</h3></div>`);
+  cooks.forEach(c=>{
+    const dur=c.endedAt?fmtDur(c.endedAt-c.startedAt):'in progress';
+    const row=$(`<div class="cook"><div><div class="t">${c.title||('Cook #'+c.id)}</div><div class="m">${fmtDate(c.startedAt)}</div></div><div class="m">${dur} ›</div></div>`);
+    row.onclick=()=>renderCook(c.id);
+    list.appendChild(row);
+  });
+  v.appendChild(list);
+}
+
+async function renderCook(id){
+  const v=document.getElementById('view'); v.innerHTML='<p class="muted center">loading…</p>';
+  const [cook,samples]=await Promise.all([j(`/api/cooks/${id}`),j(`/api/cooks/${id}/samples`)]);
+  const back=$(`<button class="btn ghost" style="margin-bottom:12px">‹ Back to history</button>`);
+  back.onclick=()=>renderHistory();
+  v.innerHTML=''; v.appendChild(back);
+  const dur=cook.endedAt?fmtDur(cook.endedAt-cook.startedAt):fmtDur(Date.now()-cook.startedAt);
+  v.appendChild($(`<div class="card"><b>${cook.title||('Cook #'+cook.id)}</b><div class="m muted">${fmtDate(cook.startedAt)} · ${dur} · ${samples.length} samples</div></div>`));
+  v.appendChild(chartCard(samples, cur.capabilities.meatProbes));
+  if(cook.events&&cook.events.length){
+    const ev=$(`<div class="card"><h3 style="margin-top:0">Events</h3></div>`);
+    cook.events.forEach(e=>ev.appendChild($(`<div class="m">• ${new Date(e.ts).toLocaleTimeString()} — ${e.type}${e.note?': '+e.note:''}</div>`)));
+    v.appendChild(ev);
+  }
+}
+
+function chartCard(samples, nProbes){
+  if(samples.length<2) return $(`<div class="card muted center">Not enough data to chart yet.</div>`);
+  const W=440,H=200,pad=10;
+  const series=[{k:s=>s.setTemp,c:'#8d8078',w:1.5},{k:s=>s.grillTemp,c:'#ff6a2b',w:2.5}];
+  const pcol=['#6fce7d','#c9a24a','#4aa3ff','#b06bff'];
+  for(let i=0;i<nProbes;i++) series.push({k:s=>s.probes[i],c:pcol[i%4],w:2});
+  const vals=[]; samples.forEach(s=>series.forEach(se=>{const y=se.k(s);if(y!=null)vals.push(y);}));
+  const mn=Math.min(...vals)-10,mx=Math.max(...vals)+10;
+  const t0=samples[0].ts,t1=samples[samples.length-1].ts||t0+1;
+  const poly=(se)=>{
+    if(samples.some(s=>se.k(s)==null)) return '';
+    const p=samples.map(s=>{const x=pad+(W-2*pad)*(s.ts-t0)/(t1-t0);const y=H-pad-(H-2*pad)*(se.k(s)-mn)/(mx-mn);return x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+    return `<polyline fill="none" stroke="${se.c}" stroke-width="${se.w}" points="${p}"/>`;
+  };
+  const leg=[['set temp','#8d8078'],['grill','#ff6a2b']].concat(Array.from({length:nProbes},(_,i)=>['P'+(i+1),pcol[i%4]]));
+  return $(`<div class="card">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:200px">${series.map(poly).join('')}</svg>
+    <div class="m" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">${leg.map(l=>`<span><i style="display:inline-block;width:10px;height:3px;background:${l[1]};vertical-align:middle;margin-right:4px"></i>${l[0]}</span>`).join('')}</div>
+  </div>`);
+}
+
+// tabs
+document.getElementById('tabs').addEventListener('click',(e)=>{
+  const t=e.target.closest('.tab'); if(!t)return;
+  tab=t.dataset.t; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===tab)); render();
+});
+
+boot();
+</script>
+</body>
+</html>

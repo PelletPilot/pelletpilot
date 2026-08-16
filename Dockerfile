@@ -11,15 +11,17 @@ COPY packages/protocol/package.json packages/protocol/
 COPY packages/server/package.json packages/server/
 RUN pnpm install --no-frozen-lockfile
 
-# build protocol + server
+# build protocol + server, and bundle the web app
 COPY packages/protocol packages/protocol
 COPY packages/server packages/server
+COPY packages/app packages/app
 RUN pnpm --filter @pelletpilot/protocol build \
     && pnpm --filter @pelletpilot/server build
 
 # ---- runtime ----
 FROM node:20-bookworm-slim AS runtime
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=8080 DB_FILE=/data/pelletpilot.db
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=8080 DB_FILE=/data/pelletpilot.db \
+    STATIC_DIR=/app/packages/app/public
 WORKDIR /app
 COPY --from=build /app /app
 WORKDIR /app/packages/server
