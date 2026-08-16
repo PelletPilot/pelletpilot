@@ -38,6 +38,14 @@
   .dot{width:10px;height:10px;border-radius:50%;background:var(--off);margin:0 auto 6px;}
   .act.on .st{color:var(--brand);} .act.fan.on .dot{background:var(--probe);} .act.ign.on .dot{background:var(--danger);} .act.aug.on .dot{background:var(--brand2);}
   .act .lbl{font-size:11px;color:var(--muted);} .act .st{font-size:11px;font-weight:700;color:var(--off);}
+  /* compact set-temp button + status line + modal */
+  .setbtn{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin:12px 0;cursor:pointer;}
+  .setbtn .n{font-size:26px;font-weight:800;line-height:1;} .setbtn .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-top:3px;}
+  .setbtn .edit{color:var(--brand);font-size:14px;font-weight:700;}
+  .statusline{display:flex;gap:18px;justify-content:center;margin:0 0 14px;font-size:12px;color:var(--off);}
+  .statusline .s.on{color:var(--fg);} .statusline .s.on.fan{color:var(--probe);} .statusline .s.on.ign{color:var(--danger);} .statusline .s.on.aug{color:var(--brand2);}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.66);display:grid;place-items:center;z-index:50;padding:20px;}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;width:100%;max-width:340px;}
   .probes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .pr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;display:flex;gap:10px;align-items:center;}
   .pr .id{font-size:11px;font-weight:800;} .pr .cur{font-size:19px;font-weight:800;} .pr .cur span{font-size:11px;color:var(--muted);}
@@ -224,22 +232,44 @@ function renderLive(){
       <div class="st">${on?(grill<set-2?'heating to '+set+'°':'holding '+set+'°'):'off'}</div>
       <div class="prog"><i style="width:${on&&set?Math.max(4,Math.min(100,grill/set*100)):0}%"></i></div>
     </div>
-    <div class="setrow">
-      <div class="step" id="dn">−</div>
-      <div class="setval"><div class="n">${set!=null?set+'°':'--'}</div><div class="l">Set Temp</div></div>
-      <div class="step" id="up">+</div>
+    <div class="setbtn" id="setbtn">
+      <div><div class="n">${set!=null?set+'°':'--'}</div><div class="l">Set Temp</div></div>
+      <div class="edit">Change ✎</div>
     </div>
-    <div class="acts">
-      <div class="act fan ${on&&s.fanState?'on':''}"><div class="dot"></div><div class="lbl">Fan</div><div class="st">${on&&s.fanState?'ON':'OFF'}</div></div>
-      <div class="act ign ${on&&s.hotState?'on':''}"><div class="dot"></div><div class="lbl">Igniter</div><div class="st">${on&&s.hotState?'HOT':'OFF'}</div></div>
-      <div class="act aug ${on&&s.motorState?'on':''}"><div class="dot"></div><div class="lbl">Auger</div><div class="st">${on&&s.motorState?'FEED':'OFF'}</div></div>
+    <div class="statusline">
+      <span class="s fan ${on&&s.fanState?'on':''}">● Fan</span>
+      <span class="s ign ${on&&s.hotState?'on':''}">● Igniter</span>
+      <span class="s aug ${on&&s.motorState?'on':''}">● Auger</span>
     </div>
     ${caps.meatProbes?`<div class="probes">${probes}</div>`:'<p class="muted center">Chamber sensor only.</p>'}
   </div>`));
 
   const cmd=(setTemp)=>j(`/api/devices/${cur.id}/command`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setTemp})}).catch(()=>{});
-  v.querySelector('#up').onclick=()=>{const n=Math.min(caps.maxTemp,(set||caps.minTemp)+caps.tempStep);cmd(n);};
-  v.querySelector('#dn').onclick=()=>{const n=Math.max(caps.minTemp,(set||caps.minTemp)-caps.tempStep);cmd(n);};
+  v.querySelector('#setbtn').onclick=()=>openSetModal(set,caps,cmd);
+}
+
+function openSetModal(current, caps, onSave){
+  let val = Math.round((current!=null?current:caps.minTemp)/caps.tempStep)*caps.tempStep;
+  val = Math.max(caps.minTemp, Math.min(caps.maxTemp, val));
+  const ov=$(`<div class="modal-bg"><div class="modal">
+    <h3 class="center" style="margin:0 0 10px">Set Temperature</h3>
+    <div class="setrow">
+      <div class="step" id="m-dn">−</div>
+      <div class="setval"><div class="n" id="m-val">${val}°</div><div class="l">Target</div></div>
+      <div class="step" id="m-up">+</div>
+    </div>
+    <div style="height:10px"></div>
+    <button class="btn" id="m-save">Set ${val}°</button>
+    <button class="btn ghost" id="m-cancel" style="margin-top:10px">Cancel</button>
+  </div></div>`);
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  const upd=()=>{ov.querySelector('#m-val').textContent=val+'°';ov.querySelector('#m-save').textContent='Set '+val+'°';};
+  ov.querySelector('#m-up').onclick=()=>{val=Math.min(caps.maxTemp,val+caps.tempStep);upd();};
+  ov.querySelector('#m-dn').onclick=()=>{val=Math.max(caps.minTemp,val-caps.tempStep);upd();};
+  ov.querySelector('#m-save').onclick=()=>{onSave(val);close();};
+  ov.querySelector('#m-cancel').onclick=close;
+  ov.onclick=(e)=>{if(e.target===ov)close();};
 }
 
 // ---------- history ----------
