@@ -6,7 +6,7 @@ import {
   PelletGrill, TEMPLATES, templateById, defaultCapabilities,
   suggestTemplate, setTemperature, type Capabilities,
 } from "@pelletpilot/protocol";
-import type { Store } from "./db.js";
+import type { Store, Bundle } from "./db.js";
 import type { Poller } from "./poller.js";
 import { scanSubnet } from "./discover.js";
 
@@ -120,6 +120,15 @@ export function registerRoutes(app: FastifyInstance, store: Store, poller: Polle
       return reply.code(400).send({ error: "setTemp or command required" });
     }
   );
+
+  // --- export / import (portability + future cloud upload) ---
+  app.get<{ Querystring: { deviceId?: string } }>("/api/export", async (req) =>
+    store.exportBundle(req.query.deviceId)
+  );
+  app.post("/api/import", async (req, reply) => {
+    if (!req.body || typeof req.body !== "object") return reply.code(400).send({ error: "bundle required" });
+    return store.importBundle(req.body as Bundle);
+  });
 
   // --- cook history ---
   app.get<{ Params: { id: string } }>("/api/devices/:id/cooks", async (req) =>

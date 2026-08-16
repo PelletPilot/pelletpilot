@@ -4,6 +4,7 @@
  */
 import Database from "better-sqlite3";
 import type { Capabilities } from "@pelletpilot/protocol";
+import { newId } from "./ids.js";
 
 export interface DeviceRow {
   id: string; // device id (from firmware) or a user slug
@@ -27,11 +28,23 @@ export interface Device {
 
 export interface Cook {
   id: number;
+  uid: string; // stable, globally-unique — survives export/import + cloud upload
   deviceId: string;
   title: string | null;
   startedAt: number;
   endedAt: number | null;
   notes: string | null;
+}
+
+export interface CookExport extends Cook {
+  samples: Sample[];
+  events: { ts: number; type: string; note: string | null }[];
+}
+export interface Bundle {
+  version: number;
+  exportedAt: number;
+  devices: Device[];
+  cooks: CookExport[];
 }
 
 export interface Sample {
@@ -71,6 +84,16 @@ export function openDb(file: string) {
       FOREIGN KEY(cook_id) REFERENCES cooks(id) ON DELETE CASCADE
     );
   `);
+  // migration: stable cook uid (for export/import + cloud upload)
+  const cols = db.prepare("PRAGMA table_info(cooks)").all() as { name: string }[];
+  if (!cols.some((c) => c.name === "uid")) {
+    db.exec("ALTER TABLE cooks ADD COLUMN uid TEXT");
+    const upd = db.prepare("UPDATE cooks SET uid=? WHERE id=?");
+    for (const r of db.prepare("SELECT id FROM cooks WHERE uid IS NULL").all() as { id: number }[]) {
+      upd.run(newId("cook"), r.id);
+    }
+  }
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_cooks_uid ON cooks(uid)");
   return new Store(db);
 }
 
@@ -119,9 +142,12 @@ export class Store {
   }
   startCook(deviceId: string, title?: string): Cook {
     const info = this.db.prepare(
-      "INSERT INTO cooks (device_id,title,started_at) VALUES (?,?,?)"
-    ).run(deviceId, title ?? null, nowMs());
+      "INSERT INTO cooks (uid,device_id,title,started_at) VALUES (?,?,?,?)"
+    ).run(newId("cook"), deviceId, title ?? null, nowMs());
     return this.getCook(Number(info.lastInsertRowid))!;
+  }
+  cookByUid(uid: string): Cook | undefined {
+    return this.mapCook(this.db.prepare("SELECT * FROM cooks WHERE uid=?").get(uid));
   }
   endCook(cookId: number) {
     this.db.prepare("UPDATE cooks SET ended_at=? WHERE id=? AND ended_at IS NULL").run(nowMs(), cookId);
@@ -135,7 +161,39 @@ export class Store {
     ).all(deviceId, limit) as any[]).map((r) => this.mapCook(r)!);
   }
   private mapCook(r: any): Cook | undefined {
-    return r ? { id: r.id, deviceId: r.device_id, title: r.title, startedAt: r.started_at, endedAt: r.ended_at, notes: r.notes } : undefined;
+    return r ? { id: r.id, uid: r.uid, deviceId: r.device_id, title: r.title, startedAt: r.started_at, endedAt: r.ended_at, notes: r.notes } : undefined;
+  }
+
+  // --- export / import (portability + cloud upload) ---
+  exportBundle(deviceId?: string): Bundle {
+    const devices = deviceId ? [this.getDevice(deviceId)].filter(Boolean) as Device[] : this.listDevices();
+    const cooks: CookExport[] = [];
+    for (const d of devices) {
+      for (const c of this.listCooks(d.id, 1_000_000)) {
+        cooks.push({ ...c, samples: this.getSamples(c.id), events: this.getEvents(c.id) as any });
+      }
+    }
+    return { version: 1, exportedAt: nowMs(), devices, cooks };
+  }
+
+  /** Idempotent: cooks are matched by uid; existing ones are skipped. */
+  importBundle(b: Bundle): { imported: number; skipped: number } {
+    let imported = 0, skipped = 0;
+    const tx = this.db.transaction(() => {
+      for (const d of b.devices ?? []) this.upsertDevice(d);
+      for (const c of b.cooks ?? []) {
+        if (!c.uid || this.cookByUid(c.uid)) { skipped++; continue; }
+        const info = this.db.prepare(
+          "INSERT INTO cooks (uid,device_id,title,started_at,ended_at,notes) VALUES (?,?,?,?,?,?)"
+        ).run(c.uid, c.deviceId, c.title ?? null, c.startedAt, c.endedAt ?? null, c.notes ?? null);
+        const id = Number(info.lastInsertRowid);
+        for (const s of c.samples ?? []) this.addSample({ ...s, cookId: id });
+        for (const e of c.events ?? []) this.addEventAt(id, e.ts, e.type, e.note ?? undefined);
+        imported++;
+      }
+    });
+    tx();
+    return { imported, skipped };
   }
 
   // --- samples & events ---
@@ -154,7 +212,10 @@ export class Store {
     }));
   }
   addEvent(cookId: number, type: string, note?: string) {
-    this.db.prepare("INSERT INTO events (cook_id,ts,type,note) VALUES (?,?,?,?)").run(cookId, nowMs(), type, note ?? null);
+    this.addEventAt(cookId, nowMs(), type, note);
+  }
+  addEventAt(cookId: number, ts: number, type: string, note?: string) {
+    this.db.prepare("INSERT INTO events (cook_id,ts,type,note) VALUES (?,?,?,?)").run(cookId, ts, type, note ?? null);
   }
   getEvents(cookId: number) {
     return this.db.prepare("SELECT ts,type,note FROM events WHERE cook_id=? ORDER BY ts").all(cookId);

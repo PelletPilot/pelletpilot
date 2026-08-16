@@ -16,7 +16,8 @@
     "@fastify/websocket": "^11.0.0",
     "@pelletpilot/protocol": "workspace:*",
     "better-sqlite3": "^11.3.0",
-    "fastify": "^5.0.0"
+    "fastify": "^5.0.0",
+    "ksuid": "^3.0.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
