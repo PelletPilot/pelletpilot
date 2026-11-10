@@ -12,6 +12,13 @@ build smarter control on top — without the vendor app or vendor cloud.
 > hardware compatibility. Use at your own risk (see [LICENSE](LICENSE) and
 > [`docs/05-security-findings.md`](docs/05-security-findings.md)).
 
+<p align="center">
+  <img src="docs/screenshots/app-live.png" alt="PelletPilot web app: live dashboard" width="300" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/app-cook-history.png" alt="PelletPilot web app: cook history chart" width="300" />
+</p>
+<p align="center"><sub>Web app served by <code>packages/server</code>: live dashboard (left) and a recorded cook with grill and probe temperatures (right).</sub></p>
+
 ---
 
 ## What's in the box
