@@ -1,6 +1,8 @@
 # packages/app — PelletPilot mobile web app (PWA SPA)
 
-> Status: 🟡 design. This README is the spec; implementation lands after the server.
+> Status: 🟢 usable. A single-file SPA ([`public/index.html`](public/index.html)) served by
+> `packages/server` implements the add-device wizard, live dashboard, set temp, and cook
+> history with probe graphs. The rest of this README is the target spec.
 
 A mobile-first, installable web app (PWA) for watching and running a cook. Works in three
 modes with one codebase, all built on `@pelletpilot/protocol`:

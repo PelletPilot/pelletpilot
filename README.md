@@ -28,7 +28,7 @@ build smarter control on top — without the vendor app or vendor cloud.
 | **Protocol core** | [`@pelletpilot/protocol`](packages/protocol) | TypeScript codec for the `FE…FF` serial frames + the RPC client. One source of truth, shared by everything. | 🟢 usable |
 | **Firmware** | [`pelletpilot/firmware`](https://github.com/pelletpilot/firmware) *(separate repo)* | Drop-in ESP32 app that points your grill at *your* cloud (v1: mJS; native ESP-IDF later). | 🟡 design |
 | **Server** | [`packages/server`](packages/server) | Self-host server (Docker, **no auth**): device registry, capability templates, **cook history**. | 🟢 buildable |
-| **Mobile web app** | [`packages/app`](packages/app) | Mobile-first PWA SPA — live dashboard, control, probe graphs, cook timers. | 🟡 design |
+| **Mobile web app** | [`packages/app`](packages/app) | Mobile-first SPA served by the server — add-device wizard (LAN scan), live dashboard, set temp, cook history with probe graphs. PWA install + cook timers planned. | 🟢 usable |
 | **Python tools** | [`tools/`](tools) | Dependency-free CLI client + frame decoder (reference impl, validated app-accurate). | 🟢 usable |
 
 The complete reverse-engineering of the device, protocol, and cloud lives in
@@ -87,7 +87,8 @@ TypeScript packages (installable) land as the monorepo fills in — see the road
 - [ ] `@pelletpilot/protocol` — TS codec + client (in progress)
 - [x] `packages/server` — self-host server (Docker, no auth): devices + capability templates + cook history (SQLite)
 - [ ] hosted public server — user accounts + cloud cook log (separate from the OSS build)
-- [ ] `packages/app` — mobile PWA SPA (dashboard, control, probe graphs)
+- [x] `packages/app` — mobile web SPA (dashboard, set temp, cook history + probe graphs)
+- [ ] `packages/app` — PWA install/offline shell, cook timers, alerts
 - [ ] `pelletpilot/firmware` *(separate repo)* — drop-in ESP32 app that repoints the grill to a PelletPilot server
 - [ ] Path-A "smart hold" supervisor (setpoint PID) — [`docs/07`](docs/07-pid-control-feasibility.md)
 - [ ] Path-B control-board replacement reference design (true PID) — stretch
